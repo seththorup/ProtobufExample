@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package CNES.messages;
+
+//import "msg/base/Defines.proto";
+//import "msg/base/Header.proto";
+
+// General top down structure
+// --------------------------
+// Node           [multiple nodes, A node is something that can have a position in relation to earth]
+// --Transmitter  [Each Node can have zero or more transmitters]
+// ----Channel    [Each transmitter can have one or more channels to send data on], NOTE: This might be the same thing as Dataplane ID
+// ----Antenna    [Each transmitter can have zero or more antennas]
+// --Receiver     [Each Node can have zero or more receivers]
+// ----Channel    [Each receiver can have one or more channels to send data on], NOTE: This might be the same thing as Dataplane ID
+// ----Antenna    [Each receiver can have zero or more antennas]
+
+// There are one or more channels for each transmitter
+message Tx_channel {
+  // This messages uses Message_header for it's indexes by using
+  // -- node_id             -> The Node ID that this channel belongs to (tx_node_id)
+  // -- tx_transmitter_id   -> The ID for the transmitter
+  // -- tx_chan_id          -> The Channel ID we are using
+  //msg.base.Header msg_hdr = 1;
+
+  //msg.base.Defines.Channel_type chan_type = 2;
+  //msg.base.Defines.Waveform_type wf_type = 3;
+  uint64 current_frequency_kHz = 4;   // Current frequency that channel on
+  // uint32 bandwidth_hz = 5; this is replaced by bandwidth_mhz. Keep the index so we don't have to drop tables
+  uint64 link_rate_bps = 6;
+  uint64 requested_link_rate_bps = 7; // The requested link rate (should match wf_id for capstone wfs)
+  uint32 pgi = 8;
+  double percentage_ant_power = 9;
+  double tx_power_dbm = 10;
+  double max_power_dbm = 11;
+  uint64 data_rate_bps = 12;
+  double noise_figure  = 13;   // deprecated, use Rx_channel.noise_figure_db
+  double bandwidth_mhz = 14;
+  uint32 data_path_id = 15;
+  repeated uint32 band_id = 16;
+  repeated double freq_start_khz = 17;
+  repeated double freq_end_khz = 18;
+  uint32 current_band_id = 19;
+  repeated uint32 active_ant_ids = 20;
+  uint32 sequence_number = 21; // power_rate_frequency - used to track snr request.
+  repeated float band_feedloss_db = 22; // Antennas have first-level feed loss, but can be overridden here per band
+}
